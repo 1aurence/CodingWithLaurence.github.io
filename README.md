@@ -1,4 +1,4 @@
-# test
+# NewsCenter
 
 > A Vue.js project
 
