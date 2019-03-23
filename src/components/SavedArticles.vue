@@ -46,11 +46,16 @@ img {
   height: 200px;
 }
 .article-container {
-  display: grid !important;
+  display: grid ;
   grid-template-columns: repeat(3, 25%);
-  grid-template-rows: auto;
+  grid-template-rows: max-content;
   grid-gap: 2%;
   justify-content: center;
-
+  @media screen and (max-width: 1350px) {
+      grid-template-columns: repeat(2, 35%);
+  }
+    @media screen and (max-width: 945px) {
+      grid-template-columns: 75%;
+  }
 }
 </style>
