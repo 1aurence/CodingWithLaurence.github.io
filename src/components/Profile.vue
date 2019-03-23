@@ -15,11 +15,11 @@ import { db } from "../firebase";
 export default {
   data() {
     return {
-      user: null
+      user: []
     };
   },
   firebase() {
-    user: db.collection("users").where("uid", "==", this.$session.get("user"));
+    user: db.collection("users").where("email", "==", 'mom@aol.com');
   },
 
   mounted() {
@@ -27,9 +27,5 @@ export default {
 
   }
 };
-//    articles: db
-        // .collection("saved_articles")
-        // .where("user", "==", this.$session.get("user"))
-    // };
 </script>
 

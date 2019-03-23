@@ -8,7 +8,7 @@
           <a
             class="nav-link active"
             href="#"
-            @click="getNews('https://newsapi.org/v2/everything?q=bitcoin&from=2019-02-22&sortBy=publishedAt&apiKey=3077a2e3e4f94552b071d1e2666fb582')"
+            @click="getNews('https://newsapi.org/v2/everything?q=bitcoin&sortBy=publishedAt&apiKey=3077a2e3e4f94552b071d1e2666fb582')"
           >Bitcoin</a>
         </li>
         <li class="nav-item">
@@ -53,6 +53,8 @@
       </div>
     </header>
     <div class="alert alert-success w-25 m-auto" v-if="saveAlert">Article has been saved</div>
+    <div class="alert alert-warning w-25 m-auto" v-if="error.status">{{ error.msg }}</div>
+
     <div class="article-container">
       <div class="card card-body shadow-sm" v-for="(article, index) in paginatedNews" :key="index">
         <img :src="article.urlToImage" alt>
@@ -97,20 +99,22 @@ export default {
       },
       search: "",
       saveAlert: false,
-      currentEndpoint: null
+      currentEndpoint: null,
+      currentFilter: null,
+      error: {
+        msg: null,
+        status: false
+      }
     };
-  },
-  updated() {
-    console.log(this.sortBy);
   },
   mounted() {
     axios
       .get(
-        "https://newsapi.org/v2/everything?q=bitcoin&from=2019-02-22&sortBy=publishedAt&apiKey=3077a2e3e4f94552b071d1e2666fb582"
+        "https://newsapi.org/v2/everything?q=bitcoin&sortBy=publishedAt&apiKey=3077a2e3e4f94552b071d1e2666fb582"
       )
       .then(res => {
         this.currentNews.articles = res.data.articles;
-        this.currentEndpoint = "https://newsapi.org/v2/everything?q=bitcoin&from=2019-02-22&sortBy=publishedAt&apiKey=3077a2e3e4f94552b071d1e2666fb582"
+        this.currentEndpoint = "https://newsapi.org/v2/everything?q=bitcoin&sortBy=publishedAt&apiKey=3077a2e3e4f94552b071d1e2666fb582"
 
       })
       .catch(err => console.log(err));
@@ -118,7 +122,7 @@ export default {
   beforeCreate: function() {
     if (!this.$session.exists()) {
       this.$router.push({ name: "LogIn" });
-    }publishedAt
+    }
   },
   computed: {
     paginatedNews() {
@@ -145,7 +149,14 @@ export default {
       axios
         .get(url)
         .then(res => (this.currentNews.articles = res.data.articles))
-        .catch(err => console.log(err.message));
+        .catch(err => {
+          this.error.status = true
+          this.error.msg = err.message
+          setTimeout(() => {
+          this.error.status = false
+
+          }, 2500);
+        });
     },
     saveArticle(article) {
       this.saveAlert = true;
@@ -168,14 +179,15 @@ export default {
       }
     },
     filterResults(filter) {
-      let  currentFilter = filter
-      let regex = /\w{0,}(?=&api)/gi;
-      let updatedUrl = this.currentEndpoint.replace(regex, filter);
-      console.log(updatedUrl)
+      let regex = /\w+(?=&apiKey)/gm;
+      let currentFilter = this.currentEndpoint.match(regex)
       if(currentFilter !== filter) {
-       axios.get(updatedUrl)
-      .then(res => this.currentNews.articles = res.data.articles)
-      }
+        let newUrl = this.currentEndpoint.replace(currentFilter, filter)
+        this.currentEndpoint = newUrl
+        this.currentFilter = filter
+        axios.get(newUrl)
+        .then(res => this.currentNews.articles = res.data.articles)
+      } 
     }
   }
 };
