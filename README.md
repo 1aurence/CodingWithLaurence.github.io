@@ -2,3 +2,5 @@
 Guest access: email: **guest@aol.com** password: **guestuser**
 
 ## Currently glitchy on Github so if you refresh page and get a 404 then navigate back to the root of the site and that should fix it (https://codingwithlaurence.github.io/)
+
+Project was created using Vue-Cli and is using Firestore for the database
